@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestor de Videos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: #0f1117;
+            color: #e4e6eb;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        /* Header - Plano */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .header h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+        
+        .header-buttons {
+            display: flex;
+            gap: 0.75rem;
+        }
+        
+        /* Botones Planos */
+        .btn {
+            padding: 0.7rem 1.4rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-size: 0.875rem;
+            font-weight: 500;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        }
+        
+        .btn-secondary {
+            background: #1a1d2e;
+            color: #e4e6eb;
+            box-shadow: 0 0 0 1px rgba(255,255,255,0.1);
+        }
+        
+        .btn-secondary:hover {
+            background: #22263a;
+        }
+        
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+        }
+        
+        .btn-ghost {
+            background: transparent;
+            color: #8b8fa3;
+            box-shadow: none;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .btn-ghost:hover {
+            background: rgba(255,255,255,0.05);
+            border-color: rgba(255,255,255,0.15);
+        }
+        
+        /* Card Plano */
+        .card {
+            background: #1a1d2e;
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        /* Search Bar */
+        .search-wrapper {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        input[type="text"], select, textarea {
+            padding: 0.85rem 1rem;
+            background: #0f1117;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 6px;
+            color: #e4e6eb;
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+        }
+        
+        input[type="text"] {
+            flex: 1;
+        }
+        
+        input[type="text"]:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            background: #13151f;
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+            line-height: 1.5;
+        }
+        
+        /* Filters */
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+        }
+        
+        .filter-group label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #8b8fa3;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        select {
+            width: 100%;
+            cursor: pointer;
+        }
+        
+        /* Results */
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .results-count {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #8b8fa3;
+        }
+        
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        /* Video Card - Plano */
+        .video-card {
+            background: #1a1d2e;
+            border-radius: 8px;
+            padding: 0;
+            border: 1px solid rgba(255,255,255,0.05);
+            overflow: hidden;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        
+        .video-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(102, 126, 234, 0.3);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .video-thumbnail {
+            width: 100%;
+            height: 190px;
+            background: #0f1117;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .video-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: opacity 0.3s;
+        }
+        
+        .video-thumbnail:hover img {
+            opacity: 0;
+        }
+        
+        .video-thumbnail iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        
+        .video-thumbnail:hover iframe {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .video-content {
+            padding: 1.25rem;
+        }
+        
+        .video-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .video-description {
+            font-size: 0.85rem;
+            color: #8b8fa3;
+            margin-bottom: 0.75rem;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .video-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-bottom: 1rem;
+        }
+        
+        .meta-tag {
+            font-size: 0.7rem;
+            padding: 0.25rem 0.6rem;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 4px;
+            color: #8b9ff5;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+        
+        .video-url-box {
+            background: #0f1117;
+            padding: 0.6rem 0.8rem;
+            border-radius: 4px;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .video-url-box input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #8b8fa3;
+            font-size: 0.75rem;
+            padding: 0;
+        }
+        
+        .video-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        /* Modal Plano */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 17, 23, 0.95);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: #1a1d2e;
+            border-radius: 8px;
+            padding: 2rem;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .modal-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .close-btn {
+            background: transparent;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #8b8fa3;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .close-btn:hover {
+            color: #e4e6eb;
+        }
+        
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #8b8fa3;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Videos Relacionados */
+        .related-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .related-section h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #e4e6eb;
+        }
+        
+        .related-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 0.75rem;
+        }
+        
+        .related-card {
+            background: #0f1117;
+            border-radius: 6px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .related-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+        
+        .related-thumbnail {
+            width: 100%;
+            height: 80px;
+            background: #000;
+        }
+        
+        .related-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        /* Loading & Empty */
+        .loading, .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: #8b8fa3;
+            grid-column: 1 / -1;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 32px;
+            height: 32px;
+            border: 3px solid rgba(102, 126, 234, 0.2);
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.4;
+        }
+        
+        /* Detail Modal */
+        .detail-video {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #000;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+        
+        .detail-video iframe {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .detail-info {
+            margin-bottom: 1.5rem;
+        }
+        
+        .detail-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            line-height: 1.3;
+        }
+        
+        .detail-description {
+            color: #b2bec3;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+        
+        .detail-meta-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .meta-item {
+            padding: 0.75rem;
+            background: #0f1117;
+            border-radius: 6px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .meta-label {
+            font-size: 0.7rem;
+            color: #8b8fa3;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.25rem;
+        }
+        
+        .meta-value {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #e4e6eb;
+        }
+        
+        .detail-actions {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+            .related-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Gestor de Videos</h1>
+            <div class="header-buttons">
+                <a href="https://pro.sony/s3/2018/06/06110029/s709Cubes.zip" download class="btn btn-secondary">
+                    Descargar LUT
+                </a>
+                <a href="http://localhost:5000" target="_blank" class="btn btn-secondary">
+                    Descargador
+                </a>
+                <button onclick="abrirModalAgregar()" class="btn">
+                    Agregar Video
+                </button>
+            </div>
+        </div>
+        
+        <!-- Search & Filters -->
+        <div class="card">
+            <div class="search-wrapper">
+                <input 
+                    type="text" 
+                    id="search-input"
+                    placeholder="Buscar por título, descripción o etiquetas..."
+                    onkeyup="buscarVideos()"
+                >
+                <button onclick="buscarVideos()" class="btn">
+                    Buscar
+                </button>
+            </div>
+            
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label>Resolución</label>
+                    <select id="filter-resolucion" onchange="buscarVideos()">
+                        <option value="">Todas</option>
+                        <option value="4K">4K</option>
+                        <option value="2K">2K</option>
+                        <option value="Full HD">Full HD</option>
+                        <option value="HD">HD</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label>FPS</label>
+                    <select id="filter-fps" onchange="buscarVideos()">
+                        <option value="">Todos</option>
+                        <option value="24">24 fps</option>
+                        <option value="30">30 fps</option>
+                        <option value="60">60 fps</option>
+                        <option value="120">120 fps</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label>Sede</label>
+                    <select id="filter-sede" onchange="buscarVideos()">
+                        <option value="">Todas</option>
+                        <option value="Ciudad Universitaria">Ciudad Universitaria</option>
+                        <option value="Ciudadela Robledo">Ciudadela Robledo</option>
+                        <option value="Facultad de Medicina">Facultad de Medicina</option>
+                        <option value="Facultad de Enfermería">Facultad de Enfermería</option>
+                        <option value="Facultad de Odontología">Facultad de Odontología</option>
+                        <option value="Facultad Nacional de Salud Pública">Facultad Nacional de Salud Pública</option>
+                        <option value="Sede de Posgrados">Sede de Posgrados</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label>Orientación</label>
+                    <select id="filter-orientacion" onchange="buscarVideos()">
+                        <option value="">Todas</option>
+                        <option value="Horizontal">Horizontal</option>
+                        <option value="Vertical">Vertical</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Results -->
+        <div class="results-header">
+            <div class="results-count" id="results-count">0 videos</div>
+        </div>
+        
+        <div class="results-grid" id="results-container">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p style="margin-top: 1rem;">Cargando videos...</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Agregar -->
+    <div class="modal" id="modal-agregar">
+        <div class="modal-content" style="max-width: 1100px;">
+            <div class="modal-header">
+                <h2>Agregar Video</h2>
+                <button class="close-btn" onclick="cerrarModal('modal-agregar')">✕</button>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 400px 1fr; gap: 2rem;">
+                <!-- Preview del Video -->
+                <div>
+                    <div id="preview-container" style="display: none;">
+                        <div style="width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 6px; overflow: hidden; margin-bottom: 1rem;">
+                            <img id="preview-thumbnail" src="" alt="Preview" style="width: 100%; height: 100%; object-fit: cover;">
+                        </div>
+                        <h4 id="preview-title" style="font-size: 0.95rem; margin-bottom: 0.5rem; color: #e4e6eb;"></h4>
+                        <p id="preview-channel" style="font-size: 0.8rem; color: #8b8fa3;"></p>
+                    </div>
+                    <div id="preview-placeholder" style="width: 100%; aspect-ratio: 16/9; background: #0f1117; border-radius: 6px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.05);">
+                        <p style="color: #8b8fa3; font-size: 0.85rem;">La vista previa aparecerá aquí</p>
+                    </div>
+                </div>
+                
+                <!-- Formulario -->
+                <div>
+                    <form id="form-agregar" onsubmit="agregarVideo(event)">
+                        <div class="form-group">
+                            <label>URL de YouTube *</label>
+                            <input type="url" id="input-url" required placeholder="https://youtube.com/watch?v=..." onblur="cargarPreview()">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Título *</label>
+                            <input type="text" id="input-titulo" required placeholder="Nombre del video">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Descripción</label>
+                            <textarea id="input-descripcion" placeholder="Descripción del contenido" style="min-height: 60px;"></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Etiquetas</label>
+                            <input type="text" id="input-etiquetas" placeholder="evento, entrevista, documental">
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label>Resolución</label>
+                                <select id="input-resolucion">
+                                    <option value="">Seleccionar</option>
+                                    <option value="4K">4K</option>
+                                    <option value="2K">2K</option>
+                                    <option value="Full HD">Full HD</option>
+                                    <option value="HD">HD</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label>FPS</label>
+                                <select id="input-fps">
+                                    <option value="">Seleccionar</option>
+                                    <option value="24">24 fps</option>
+                                    <option value="30">30 fps</option>
+                                    <option value="60">60 fps</option>
+                                    <option value="120">120 fps</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label>Cámara</label>
+                                <select id="input-camara">
+                                    <option value="">Seleccionar</option>
+                                    <option value="Sony A7V">Sony A7V</option>
+                                    <option value="Sony ZV-E10">Sony ZV-E10</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label>Perfil Color</label>
+                                <select id="input-perfil">
+                                    <option value="">Seleccionar</option>
+                                    <option value="S-log3">S-log3</option>
+                                    <option value="s709">s709</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+                            <div class="form-group">
+                                <label>Sede</label>
+                                <select id="input-sede">
+                                    <option value="">Seleccionar</option>
+                                    <option value="Ciudad Universitaria">Ciudad Universitaria</option>
+                                    <option value="Ciudadela Robledo">Ciudadela Robledo</option>
+                                    <option value="Facultad de Medicina">Facultad de Medicina</option>
+                                    <option value="Facultad de Enfermería">Facultad de Enfermería</option>
+                                    <option value="Facultad de Odontología">Facultad de Odontología</option>
+                                    <option value="Facultad Nacional de Salud Pública">Facultad Nacional de Salud Pública</option>
+                                    <option value="Sede de Posgrados">Sede de Posgrados</option>
+                                    <option value="Edificio de Extensión">Edificio de Extensión</option>
+                                    <option value="Edificio San Ignacio">Edificio San Ignacio</option>
+                                    <option value="Antigua Escuela de Derecho">Antigua Escuela de Derecho</option>
+                                    <option value="Hacienda Normandía">Hacienda Normandía</option>
+                                    <option value="Sede Envigado">Sede Envigado</option>
+                                    <option value="Sede de Investigación Universitaria SIU">Sede de Investigación Universitaria SIU</option>
+                                    <option value="Seccional Urabá">Seccional Urabá</option>
+                                    <option value="Seccional Bajo Cauca">Seccional Bajo Cauca</option>
+                                    <option value="Seccional Oriente">Seccional Oriente</option>
+                                    <option value="Seccional Suroeste">Seccional Suroeste</option>
+                                    <option value="Seccional Magdalena Medio">Seccional Magdalena Medio</option>
+                                    <option value="Sede Sonsón">Sede Sonsón</option>
+                                    <option value="Sede Yarumal">Sede Yarumal</option>
+                                    <option value="Sede Santa Fe de Antioquia">Sede Santa Fe de Antioquia</option>
+                                    <option value="Sede Amalfi">Sede Amalfi</option>
+                                    <option value="Sede Segovia">Sede Segovia</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Audiovisual</label>
+                                <select id="input-audiovisual">
+                                    <option value="">Seleccionar</option>
+                                    <option value="Audiovisual 1">Audiovisual 1</option>
+                                    <option value="Audiovisual 2">Audiovisual 2</option>
+                                    <option value="Audiovisual 3">Audiovisual 3</option>
+                                    <option value="Audiovisual 4">Audiovisual 4</option>
+                                    <option value="Audiovisual 5">Audiovisual 5</option>
+                                    <option value="Audiovisual 6">Audiovisual 6</option>
+                                    <option value="Audiovisual 7">Audiovisual 7</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Orientación</label>
+                                <select id="input-orientacion">
+                                    <option value="">Seleccionar</option>
+                                    <option value="Horizontal">Horizontal</option>
+                                    <option value="Vertical">Vertical</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn" style="width: 100%; margin-top: 1rem;">
+                            Guardar Video
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Detalle Video -->
+    <div class="modal" id="modal-detalle">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Detalles del Video</h2>
+                <button class="close-btn" onclick="cerrarModal('modal-detalle')">✕</button>
+            </div>
+            
+            <div id="detail-content"></div>
+        </div>
+    </div>
+    
+    <script>
+        window.addEventListener('load', buscarVideos);
+        
+        function buscarVideos() {
+            const query = document.getElementById('search-input').value;
+            const resolucion = document.getElementById('filter-resolucion').value;
+            const fps = document.getElementById('filter-fps').value;
+            const sede = document.getElementById('filter-sede').value;
+            const orientacion = document.getElementById('filter-orientacion').value;
+            
+            const params = new URLSearchParams();
+            if (query) params.append('q', query);
+            if (resolucion) params.append('resolucion', resolucion);
+            if (fps) params.append('fps', fps);
+            if (sede) params.append('sede', sede);
+            if (orientacion) params.append('orientacion', orientacion);
+            
+            document.getElementById('results-container').innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p style="margin-top: 1rem;">Buscando...</p>
+                </div>
+            `;
+            
+            fetch('/api/videos?' + params.toString())
+                .then(res => res.json())
+                .then(data => mostrarResultados(data.videos))
+                .catch(err => {
+                    console.error(err);
+                    document.getElementById('results-container').innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">✕</div>
+                            <p>Error al cargar videos</p>
+                        </div>
+                    `;
+                });
+        }
+        
+        function mostrarResultados(videos) {
+            const container = document.getElementById('results-container');
+            const count = document.getElementById('results-count');
+            
+            count.textContent = `${videos.length} video${videos.length !== 1 ? 's' : ''}`;
+            
+            if (videos.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">∅</div>
+                        <p>No se encontraron videos</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = videos.map(video => {
+                const youtubeId = extraerYoutubeId(video.url);
+                return `
+                    <div class="video-card" onclick="abrirDetalle(${video.id})">
+                        <div class="video-thumbnail">
+                            ${video.thumbnail ? 
+                                `<img src="${video.thumbnail}" alt="${video.titulo}">
+                                 <iframe src="https://www.youtube.com/embed/${youtubeId}?autoplay=1&mute=1" frameborder="0" allow="autoplay"></iframe>` :
+                                ''
+                            }
+                        </div>
+                        <div class="video-content">
+                            <h3 class="video-title">${video.titulo}</h3>
+                            ${video.descripcion ? `<p class="video-description">${video.descripcion}</p>` : ''}
+                            <div class="video-meta">
+                                ${video.resolucion ? `<span class="meta-tag">${video.resolucion}</span>` : ''}
+                                ${video.fps ? `<span class="meta-tag">${video.fps} fps</span>` : ''}
+                                ${video.orientacion ? `<span class="meta-tag">${video.orientacion}</span>` : ''}
+                                ${video.etiquetas ? video.etiquetas.split(',').map(tag => `<span class="meta-tag">${tag.trim()}</span>`).join('') : ''}
+                            </div>
+                            <div class="video-url-box">
+                                <input type="text" value="${video.url}" readonly id="url-${video.id}" onclick="event.stopPropagation()">
+                                <button class="btn btn-ghost btn-small" onclick="copiarURL(${video.id}); event.stopPropagation()">
+                                    Copiar
+                                </button>
+                            </div>
+                            <div class="video-actions">
+                                <button class="btn btn-small" onclick="abrirDescargador('${video.url}'); event.stopPropagation()">
+                                    Descargar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function extraerYoutubeId(url) {
+            const patterns = [
+                /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/,
+                /youtube\.com\/embed\/([^&\n?#]+)/
+            ];
+            for (let pattern of patterns) {
+                const match = url.match(pattern);
+                if (match && match[1]) return match[1];
+            }
+            return null;
+        }
+        
+        function copiarURL(videoId) {
+            const input = document.getElementById(`url-${videoId}`);
+            input.select();
+            document.execCommand('copy');
+            
+            const btn = event.target;
+            const original = btn.textContent;
+            btn.textContent = 'Copiado';
+            setTimeout(() => btn.textContent = original, 1500);
+        }
+        
+        function abrirDescargador(url) {
+            window.open(`http://localhost:5000?url=${encodeURIComponent(url)}`, '_blank');
+        }
+        
+        function abrirDetalle(videoId) {
+            fetch(`/api/videos/${videoId}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        mostrarDetalle(data.video, data.related);
+                    }
+                });
+        }
+        
+        function mostrarDetalle(video, related) {
+            const youtubeId = extraerYoutubeId(video.url);
+            
+            let html = `
+                <div class="detail-video">
+                    <iframe src="https://www.youtube.com/embed/${youtubeId}" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
+                </div>
+                
+                <div class="detail-info">
+                    <h3 class="detail-title">${video.titulo}</h3>
+                    ${video.descripcion ? `<p class="detail-description">${video.descripcion}</p>` : ''}
+                    
+                    <div class="detail-meta-grid">
+                        ${video.resolucion ? `<div class="meta-item"><div class="meta-label">Resolución</div><div class="meta-value">${video.resolucion}</div></div>` : ''}
+                        ${video.fps ? `<div class="meta-item"><div class="meta-label">FPS</div><div class="meta-value">${video.fps}</div></div>` : ''}
+                        ${video.camara ? `<div class="meta-item"><div class="meta-label">Cámara</div><div class="meta-value">${video.camara}</div></div>` : ''}
+                        ${video.perfil_color ? `<div class="meta-item"><div class="meta-label">Perfil Color</div><div class="meta-value">${video.perfil_color}</div></div>` : ''}
+                        ${video.sede ? `<div class="meta-item"><div class="meta-label">Sede</div><div class="meta-value">${video.sede}</div></div>` : ''}
+                        ${video.audiovisual ? `<div class="meta-item"><div class="meta-label">Audiovisual</div><div class="meta-value">${video.audiovisual}</div></div>` : ''}
+                        ${video.orientacion ? `<div class="meta-item"><div class="meta-label">Orientación</div><div class="meta-value">${video.orientacion}</div></div>` : ''}
+                    </div>
+                </div>
+                
+                <div class="detail-actions">
+                    <button class="btn" onclick="abrirDescargador('${video.url}')">Descargar Video</button>
+                    <button class="btn btn-secondary" onclick="copiarURLModal('${video.url}')">Copiar URL</button>
+                    <button class="btn btn-ghost" onclick="eliminarVideo(${video.id})">Eliminar Video</button>
+                </div>
+            `;
+            
+            if (related && related.length > 0) {
+                html += `
+                    <div class="related-section">
+                        <h3>Videos Relacionados</h3>
+                        <div class="related-grid">
+                            ${related.map(rel => `
+                                <div class="related-card" onclick="abrirDetalle(${rel.id})">
+                                    <div class="related-thumbnail">
+                                        ${rel.thumbnail ? `<img src="${rel.thumbnail}" alt="${rel.titulo}">` : ''}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            document.getElementById('detail-content').innerHTML = html;
+            document.getElementById('modal-detalle').classList.add('active');
+        }
+        
+        function copiarURLModal(url) {
+            navigator.clipboard.writeText(url).then(() => {
+                const btn = event.target;
+                const original = btn.textContent;
+                btn.textContent = 'Copiado';
+                setTimeout(() => btn.textContent = original, 1500);
+            });
+        }
+        
+        function eliminarVideo(videoId) {
+            if (!confirm('¿Eliminar este video?')) return;
+            
+            fetch(`/api/videos/${videoId}`, { method: 'DELETE' })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        cerrarModal('modal-detalle');
+                        buscarVideos();
+                    } else {
+                        alert('Error: ' + data.error);
+                    }
+                });
+        }
+        
+        function abrirModalAgregar() {
+            document.getElementById('modal-agregar').classList.add('active');
+        }
+        
+        function cerrarModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+            if (modalId === 'modal-agregar') {
+                document.getElementById('form-agregar').reset();
+                document.getElementById('preview-container').style.display = 'none';
+                document.getElementById('preview-placeholder').style.display = 'flex';
+            }
+        }
+        
+        function cargarPreview() {
+            const url = document.getElementById('input-url').value.trim();
+            if (!url) return;
+            
+            const videoId = extraerYoutubeId(url);
+            if (!videoId) return;
+            
+            // Mostrar preview
+            const thumbnail = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+            document.getElementById('preview-thumbnail').src = thumbnail;
+            document.getElementById('preview-container').style.display = 'block';
+            document.getElementById('preview-placeholder').style.display = 'none';
+            
+            // Intentar obtener título del video usando API de YouTube (oEmbed)
+            fetch(`https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.title) {
+                        document.getElementById('preview-title').textContent = data.title;
+                        // Auto-llenar título si está vacío
+                        if (!document.getElementById('input-titulo').value) {
+                            document.getElementById('input-titulo').value = data.title;
+                        }
+                    }
+                    if (data.author_name) {
+                        document.getElementById('preview-channel').textContent = 'Canal: ' + data.author_name;
+                    }
+                })
+                .catch(err => console.log('No se pudo obtener info del video'));
+        }
+        
+        function agregarVideo(e) {
+            e.preventDefault();
+            
+            const data = {
+                url: document.getElementById('input-url').value,
+                titulo: document.getElementById('input-titulo').value,
+                descripcion: document.getElementById('input-descripcion').value,
+                etiquetas: document.getElementById('input-etiquetas').value,
+                resolucion: document.getElementById('input-resolucion').value,
+                fps: document.getElementById('input-fps').value,
+                camara: document.getElementById('input-camara').value,
+                perfil_color: document.getElementById('input-perfil').value,
+                sede: document.getElementById('input-sede').value,
+                audiovisual: document.getElementById('input-audiovisual').value,
+                orientacion: document.getElementById('input-orientacion').value
+            };
+            
+            fetch('/api/videos', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Video agregado exitosamente');
+                    cerrarModal('modal-agregar');
+                    buscarVideos();
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            });
+        }
+        
+        // Cerrar modales
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) cerrarModal(this.id);
+            });
+        });
+        
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal.active').forEach(modal => {
+                    cerrarModal(modal.id);
+                });
+            }
+        });
+    </script>
+</body>
+</html>
