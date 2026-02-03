@@ -278,6 +278,18 @@ def extract_video_id(url):
             return match.group(1)
     return None
 
+ Inicializar base de datos AL IMPORTAR el módulo
+# Esto se ejecuta siempre, incluso con Gunicorn
+def ensure_db():
+    """Asegurar que la base de datos existe"""
+    if not os.path.exists(DATABASE):
+        print("Creando base de datos...")
+        init_db()
+        print("✓ Base de datos creada")
+
+# Ejecutar al cargar el módulo
+ensure_db()
+
 if __name__ == '__main__':
     # Puerto configurable via variable de entorno (para Render.com)
     port = int(os.environ.get('PORT', 5001))
@@ -285,10 +297,6 @@ if __name__ == '__main__':
     print("=" * 60)
     print("  YouTube Video Manager - Gestor de Contenidos")
     print("=" * 60)
-    print()
-    print("Inicializando base de datos...")
-    init_db()
-    print("✓ Base de datos lista")
     print()
     print(f"🌐 Puerto: {port}")
     print()
