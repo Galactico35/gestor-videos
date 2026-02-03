@@ -278,7 +278,7 @@ def extract_video_id(url):
             return match.group(1)
     return None
 
- Inicializar base de datos AL IMPORTAR el módulo
+# Inicializar base de datos AL IMPORTAR el módulo
 # Esto se ejecuta siempre, incluso con Gunicorn
 def ensure_db():
     """Asegurar que la base de datos existe"""
