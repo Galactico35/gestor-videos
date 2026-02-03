@@ -50,12 +50,14 @@ def get_video_info():
         # Thumbnail de YouTube
         thumbnail_url = f"https://img.youtube.com/vi/{video_id}/maxresdefault.jpg"
         
-        # Obtener formatos disponibles
+        # Obtener formatos disponibles con bypass
         comando = [
             sys.executable,
             '-m', 'yt_dlp',
             '--dump-json',
             '--no-warnings',
+            '--user-agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            '--extractor-args', 'youtube:player_client=android,web',  # ← NUEVO: Bypass
             url
         ]
         
